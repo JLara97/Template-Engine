@@ -3,6 +3,7 @@ const inquirer = require("inquirer");
 
 // Local Modules
 const render = require("./lib/htmlrenderer");
+const questions = require("./lib/questions");
 
 // Constructors
 const Manager = require("./lib/constructors/Manager");
@@ -23,7 +24,41 @@ const teamMembers = [
  */
 
 async function init() {
-  render(teamMembers);
+  const result = await inquirer.prompt(questions.initQuestion);
+
+  if(result.teamQuestion) {
+
+    const member = inquirer.prompt(questions.teamQuestion);
+
+    if(member.addMember === "Manager") {
+      
+      const managerAns = inquirer.prompt(questions.managerQuestions)
+
+      teamMembers.push ( new Manager(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
+      return;
+    }
+
+    else if(result.teamQuestion === "Engineer") {
+
+      const engAns = inquirer.prompt(questions.engineerQuestions)
+
+      teamMembers.push ( new Engineer(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
+      return;
+    }
+
+    else if (result.teamQuestion === "Intern") {
+
+      const internAns = inquirer.prompt(questions.internQuestions);
+
+      teamMembers.push ( new Manager(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
+      return;
+    }
+  }
+
+  else {
+    console.log("Have a nice day.");
+    return;
+  }
 }
 
 init();
