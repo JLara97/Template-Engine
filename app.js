@@ -2,7 +2,7 @@
 const inquirer = require("inquirer");
 
 // Local Modules
-const render = require("./lib/htmlrenderer");
+const render = require("./lib/htmlrender");
 const questions = require("./lib/questions");
 
 // Constructors
@@ -12,10 +12,10 @@ const Intern = require("./lib/constructors/Intern");
 
 // Global Variables
 const teamMembers = [
-  new Manager("Brent", 1, "brent@trilogyed.com", 200),
-  new Engineer("Tucker", 2, "tbeauchamp@2u.com", "tuckerbeauchamp"),
-  new Intern("Becky", 3, "becky@becky.com", "UofA"),
-  new Intern("Shelly", 4, "shelly@shelly.com", "UofA")
+  // new Manager("Brent", 1, "brent@trilogyed.com", 200),
+  // new Engineer("Tucker", 2, "tbeauchamp@2u.com", "tuckerbeauchamp"),
+  // new Intern("Becky", 3, "becky@becky.com", "UofA"),
+  // new Intern("Shelly", 4, "shelly@shelly.com", "UofA")
 ];
 /***
  * THIS PROJECT IS NOT COMPLETE.
@@ -26,38 +26,46 @@ const teamMembers = [
 async function init() {
   const result = await inquirer.prompt(questions.initQuestion);
 
-  if(result.teamQuestion) {
+  while (result.teamQuestion) {
 
-    const member = inquirer.prompt(questions.teamQuestion);
+    const emp = await inquirer.prompt(questions.addEmployee);
 
-    if(member.addMember === "Manager") {
-      
-      const managerAns = inquirer.prompt(questions.managerQuestions)
+    if (emp.addEmployee) {
 
-      teamMembers.push ( new Manager(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
-      return;
+      const member = await inquirer.prompt(questions.teamQuestion);
+
+      if (member.addMember == "Manager") {
+
+        const managerAns = await inquirer.prompt(questions.managerQuestions);
+
+        teamMembers.push(new Manager(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, parseInt(managerAns.managerOffice)));
+      }
+
+      else if (member.addMember == "Engineer") {
+
+        const engAns = await inquirer.prompt(questions.engineerQuestions)
+
+        console.log(engAns)
+
+        teamMembers.push(new Engineer(engAns.engName, parseInt(engAns.engId), engAns.engEmail, engAns.githubName));
+      }
+
+      else if (member.addMember == "Intern") {
+
+        const internAns = await inquirer.prompt(questions.internQuestions);
+
+        teamMembers.push(new Intern(internAns.internName, parseInt(internAns.internId), internAns.internEmail, internAns.internSchool));
+      }
+
+      else {
+        return;
+      }
     }
 
-    else if(result.teamQuestion === "Engineer") {
-
-      const engAns = inquirer.prompt(questions.engineerQuestions)
-
-      teamMembers.push ( new Engineer(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
+    else {
+      render(teamMembers);
       return;
     }
-
-    else if (result.teamQuestion === "Intern") {
-
-      const internAns = inquirer.prompt(questions.internQuestions);
-
-      teamMembers.push ( new Manager(managerAns.managerName, parseInt(managerAns.managerId), managerAns.managerEmail, managerAns.managerOffice));
-      return;
-    }
-  }
-
-  else {
-    console.log("Have a nice day.");
-    return;
   }
 }
 
